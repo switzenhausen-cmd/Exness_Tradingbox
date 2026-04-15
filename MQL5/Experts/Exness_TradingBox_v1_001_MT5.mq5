@@ -12,11 +12,13 @@
 
 int OnInit()
   {
+   TB_CreateChartUi();
    return(INIT_SUCCEEDED);
   }
 
 void OnDeinit(const int reason)
   {
+   TB_DestroyChartUi();
   }
 
 void OnTick()
