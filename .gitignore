@@ -1,0 +1,9 @@
+.worktrees/
+worktrees/
+build/
+*.ex5
+*.log
+.vs/
+*.tmp
+*.bak
+*.cache
