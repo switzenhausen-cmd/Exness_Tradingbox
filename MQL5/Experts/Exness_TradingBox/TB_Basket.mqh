@@ -1,6 +1,16 @@
 #ifndef __TB_BASKET_MQH__
 #define __TB_BASKET_MQH__
 
+double TB_ApplyExitBufferPrice(const double raw_price,const double buffer_points,const int net_direction)
+  {
+   const double buffer_price=buffer_points * _Point;
+   if(net_direction>0)
+      return NormalizeDouble(raw_price + buffer_price,_Digits);
+   if(net_direction<0)
+      return NormalizeDouble(raw_price - buffer_price,_Digits);
+   return NormalizeDouble(raw_price,_Digits);
+  }
+
 bool TB_IsBasketManagedPosition(const ulong ticket)
   {
    if(!PositionSelectByTicket(ticket))

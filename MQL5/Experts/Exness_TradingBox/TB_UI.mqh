@@ -8,6 +8,7 @@ struct TBRuntimeInputs
    double hedge_multiplier;
    double be_activation_currency;
    double atr_multiplier;
+   double exit_buffer_points;
    int    trail_mode;
   };
 
@@ -139,8 +140,10 @@ bool TB_CreateChartUi()
    ok = ok && TB_CreateEdit(TB_UiObjectName("INP_BE"),"10.00",input_left,TB_UiRowTop(4));
    ok = ok && TB_CreateLabel(TB_UiObjectName("LBL_ATR"),"ATR Mult",label_left,TB_UiRowTop(5),TB_UI_LABEL_WIDTH);
    ok = ok && TB_CreateEdit(TB_UiObjectName("INP_ATR"),"1.00",input_left,TB_UiRowTop(5));
-   ok = ok && TB_CreateLabel(TB_UiObjectName("LBL_MODE"),"Trail Mode",label_left,TB_UiRowTop(6),TB_UI_LABEL_WIDTH);
-   ok = ok && TB_CreateEdit(TB_UiObjectName("INP_MODE"),"medium",input_left,TB_UiRowTop(6));
+   ok = ok && TB_CreateLabel(TB_UiObjectName("LBL_EXIT_BUFFER"),"Exit Buffer Pts",label_left,TB_UiRowTop(6),TB_UI_LABEL_WIDTH);
+   ok = ok && TB_CreateEdit(TB_UiObjectName("INP_EXIT_BUFFER"),"5.0",input_left,TB_UiRowTop(6));
+   ok = ok && TB_CreateLabel(TB_UiObjectName("LBL_MODE"),"Trail Mode",label_left,TB_UiRowTop(7),TB_UI_LABEL_WIDTH);
+   ok = ok && TB_CreateEdit(TB_UiObjectName("INP_MODE"),"medium",input_left,TB_UiRowTop(7));
 
    ok = ok && TB_CreateLabel(TB_UiObjectName("INFO_NAME"),"EA: " + TB_BuildEaDisplayName(),info_left,TB_UiRowTop(0),TB_UI_PANEL_WIDTH);
    ok = ok && TB_CreateLabel(TB_UiObjectName("INFO_NET"),"Net Exposure: 0.00",info_left,TB_UiRowTop(1),TB_UI_PANEL_WIDTH);
@@ -149,6 +152,7 @@ bool TB_CreateChartUi()
    ok = ok && TB_CreateLabel(TB_UiObjectName("INFO_LEVERAGE"),"Current Leverage: 0.00",info_left,TB_UiRowTop(4),TB_UI_PANEL_WIDTH);
    ok = ok && TB_CreateLabel(TB_UiObjectName("INFO_SPREAD"),"Spread: 0.00",info_left,TB_UiRowTop(5),TB_UI_PANEL_WIDTH);
    ok = ok && TB_CreateLabel(TB_UiObjectName("INFO_FRAME"),"Frame Height: 0.00",info_left,TB_UiRowTop(6),TB_UI_PANEL_WIDTH);
+   ok = ok && TB_CreateLabel(TB_UiObjectName("INFO_EXIT_BUFFER"),"Exit Buffer Pts: 0.0",info_left,TB_UiRowTop(7),TB_UI_PANEL_WIDTH);
 
    TB_SetToggleButtonState(false);
    ChartRedraw(0);
@@ -168,6 +172,7 @@ bool TB_ReadChartInputs(TBRuntimeInputs &inputs)
    inputs.hedge_multiplier=TB_ParseDoubleInput(TB_UiObjectName("INP_HEDGE"),2.00);
    inputs.be_activation_currency=TB_ParseDoubleInput(TB_UiObjectName("INP_BE"),10.00);
    inputs.atr_multiplier=TB_ParseDoubleInput(TB_UiObjectName("INP_ATR"),1.00);
+   inputs.exit_buffer_points=TB_ParseDoubleInput(TB_UiObjectName("INP_EXIT_BUFFER"),5.0);
    inputs.trail_mode=TB_ParseTrailModeInput(TB_UiObjectName("INP_MODE"),1);
    return true;
   }
@@ -191,6 +196,7 @@ void TB_UpdateInfoPanel(const TBCycleState &state,
    ObjectSetString(0,TB_UiObjectName("INFO_LEVERAGE"),OBJPROP_TEXT,StringFormat("Current Leverage: %.2f",current_leverage));
    ObjectSetString(0,TB_UiObjectName("INFO_SPREAD"),OBJPROP_TEXT,StringFormat("Spread: %.1f",SymbolInfoInteger(_Symbol,SYMBOL_SPREAD) * 1.0));
    ObjectSetString(0,TB_UiObjectName("INFO_FRAME"),OBJPROP_TEXT,StringFormat("Frame Height: %.1f",state.frame_height_points));
+   ObjectSetString(0,TB_UiObjectName("INFO_EXIT_BUFFER"),OBJPROP_TEXT,StringFormat("Exit Buffer Pts: %.1f",inputs.exit_buffer_points));
    ObjectSetString(0,TB_UiObjectName("LBL_MODE"),OBJPROP_TEXT,StringFormat("Trail Mode (%d)",inputs.trail_mode));
   }
 
