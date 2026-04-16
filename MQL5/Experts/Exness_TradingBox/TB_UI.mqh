@@ -163,13 +163,21 @@ bool TB_ReadChartInputs(TBRuntimeInputs &inputs)
    return true;
   }
 
-void TB_UpdateInfoPanel(const TBCycleState &state,const TBRuntimeInputs &inputs)
+bool TB_IsStartButtonEvent(const int id,const string &sparam)
+  {
+   return (id==CHARTEVENT_OBJECT_CLICK && sparam==TB_UiObjectName("START"));
+  }
+
+void TB_UpdateInfoPanel(const TBCycleState &state,
+                        const TBRuntimeInputs &inputs,
+                        const double net_exposure_lots,
+                        const double current_leverage)
   {
    ObjectSetString(0,TB_UiObjectName("INFO_NAME"),OBJPROP_TEXT,"EA: " + TB_BuildEaDisplayName());
-   ObjectSetString(0,TB_UiObjectName("INFO_NET"),OBJPROP_TEXT,StringFormat("Net Exposure: %.2f",state.last_leg_lots));
+   ObjectSetString(0,TB_UiObjectName("INFO_NET"),OBJPROP_TEXT,StringFormat("Net Exposure: %.2f",net_exposure_lots));
    ObjectSetString(0,TB_UiObjectName("INFO_REGIME"),OBJPROP_TEXT,"Regime: Range");
    ObjectSetString(0,TB_UiObjectName("INFO_VOLA"),OBJPROP_TEXT,"Vola Index: 0.00");
-   ObjectSetString(0,TB_UiObjectName("INFO_LEVERAGE"),OBJPROP_TEXT,"Current Leverage: 0.00");
+   ObjectSetString(0,TB_UiObjectName("INFO_LEVERAGE"),OBJPROP_TEXT,StringFormat("Current Leverage: %.2f",current_leverage));
    ObjectSetString(0,TB_UiObjectName("INFO_SPREAD"),OBJPROP_TEXT,StringFormat("Spread: %.1f",SymbolInfoInteger(_Symbol,SYMBOL_SPREAD) * 1.0));
    ObjectSetString(0,TB_UiObjectName("INFO_FRAME"),OBJPROP_TEXT,StringFormat("Frame Height: %.1f",state.frame_height_points));
    ObjectSetString(0,TB_UiObjectName("LBL_MODE"),OBJPROP_TEXT,StringFormat("Trail Mode (%d)",inputs.trail_mode));
