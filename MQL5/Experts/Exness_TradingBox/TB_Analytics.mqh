@@ -1,6 +1,10 @@
 #ifndef __TB_ANALYTICS_MQH__
 #define __TB_ANALYTICS_MQH__
 
+#define TB_TRAIL_FACTOR_SOFT    1.00
+#define TB_TRAIL_FACTOR_MEDIUM  0.65
+#define TB_TRAIL_FACTOR_HARD    0.35
+
 double TB_ReadIndicatorValue(const int handle)
   {
    if(handle==INVALID_HANDLE)
@@ -36,10 +40,10 @@ double TB_ReadEmaPrice(const int period)
 double TB_TrailModeToAtrFactor(const int mode)
   {
    if(mode==0)
-      return 1.35;
+      return TB_TRAIL_FACTOR_SOFT;
    if(mode==2)
-      return 0.70;
-   return 1.00;
+      return TB_TRAIL_FACTOR_HARD;
+   return TB_TRAIL_FACTOR_MEDIUM;
   }
 
 int TB_ClassifyRegime(const double ema_fast,const double ema_slow,const double atr_points)

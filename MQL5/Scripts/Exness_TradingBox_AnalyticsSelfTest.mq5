@@ -7,6 +7,9 @@
 
 void OnStart()
   {
+   Print(TB_TRAIL_FACTOR_SOFT);
+   Print(TB_TRAIL_FACTOR_MEDIUM);
+   Print(TB_TRAIL_FACTOR_HARD);
    Print(TB_TrailModeToAtrFactor(0));
    Print(TB_ClassifyRegime(10.0,5.0,20.0));
    Print(TB_ComputeVolaIndex(45.0,90.0));
