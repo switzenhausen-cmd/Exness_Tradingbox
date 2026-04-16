@@ -165,6 +165,7 @@ The EA is built as a modular MT5 project with one main `.mq5` file and local `.m
 - After each change, files are deployed to:
   - `C:\Users\switz\AppData\Local\Temp\MT5_BT_Portable_Inst3\MQL5\Experts`
 - Every change is committed to git.
+- `git push` remains blocked until a remote is configured for this repository.
 - A repo-local session chat log is maintained because GitHub does not automatically store the live terminal chat.
 
 ## Constraints and Clarifications

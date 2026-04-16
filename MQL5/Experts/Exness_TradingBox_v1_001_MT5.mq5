@@ -1,5 +1,5 @@
 #property strict
-#property version   "1.006"
+#property version   "1.008"
 
 #include <Trade/Trade.mqh>
 #include "Exness_TradingBox/TB_Config.mqh"
@@ -13,25 +13,41 @@
 TBCycleState   g_cycle_state;
 TBRuntimeInputs g_runtime_inputs;
 
+void TB_RefreshUiAndAnalytics()
+  {
+   TB_ReadChartInputs(g_runtime_inputs);
+   const double net_exposure=TB_ComputeNetExposureLots();
+   const double current_leverage=TB_ComputeEffectiveLeverage();
+   const double atr_points=TB_ReadAtrPoints(TB_ATR_PERIOD);
+   const double ema_fast=TB_ReadEmaPrice(TB_EMA_FAST_PERIOD);
+   const double ema_slow=TB_ReadEmaPrice(TB_EMA_SLOW_PERIOD);
+   const int regime=TB_ClassifyRegime(ema_fast,ema_slow,atr_points);
+   const string regime_label=TB_RegimeToString(regime);
+   const double vola_index=TB_ComputeVolaIndex(atr_points,g_cycle_state.frame_height_points);
+
+   TB_UpdateInfoPanel(g_cycle_state,g_runtime_inputs,net_exposure,current_leverage,regime_label,vola_index);
+  }
+
 int OnInit()
   {
    TB_ResetCycleState(g_cycle_state);
    TB_ReadChartInputs(g_runtime_inputs);
    TB_CreateChartUi();
-   TB_UpdateInfoPanel(g_cycle_state,g_runtime_inputs,0.0,0.0);
+   EventSetTimer(1);
+   TB_RefreshUiAndAnalytics();
    return(INIT_SUCCEEDED);
   }
 
 void OnDeinit(const int reason)
   {
+   EventKillTimer();
    TB_DestroyChartUi();
   }
 
 void OnTick()
   {
-   TB_ReadChartInputs(g_runtime_inputs);
    const double net_exposure=TB_ComputeNetExposureLots();
-   const double current_leverage=TB_ComputeEffectiveLeverage();
+   TB_ReadChartInputs(g_runtime_inputs);
 
    if(g_cycle_state.is_active && !g_cycle_state.be_armed && TB_IsBeActivationReached(g_runtime_inputs))
      {
@@ -49,8 +65,28 @@ void OnTick()
         }
      }
 
-   TB_UpdateInfoPanel(g_cycle_state,g_runtime_inputs,net_exposure,current_leverage);
+   if(g_cycle_state.is_active && g_cycle_state.be_armed && TB_ComputeCycleOpenProfitCurrency()>0.0)
+     {
+      double next_trail_price=0.0;
+      if(TB_TryComputeCycleTrailPrice(g_cycle_state,g_runtime_inputs,net_exposure,next_trail_price))
+        {
+         g_cycle_state.trail_armed=true;
+         g_cycle_state.cycle_trail_price=next_trail_price;
+         if(TB_IsMarketAtCycleTrailPrice(g_cycle_state.cycle_trail_price,net_exposure))
+           {
+            if(TB_CloseEntireCycle("cycle_trail"))
+               TB_RebuildFrameAtMarket(g_cycle_state,g_runtime_inputs);
+           }
+        }
+     }
+
+   TB_RefreshUiAndAnalytics();
    TB_HandleBreakoutTrading(g_cycle_state,g_runtime_inputs);
+  }
+
+void OnTimer()
+  {
+   TB_RefreshUiAndAnalytics();
   }
 
 void OnChartEvent(const int id,const long &lparam,const double &dparam,const string &sparam)
@@ -59,6 +95,6 @@ void OnChartEvent(const int id,const long &lparam,const double &dparam,const str
      {
       TB_ReadChartInputs(g_runtime_inputs);
       TB_RebuildFrameAtMarket(g_cycle_state,g_runtime_inputs);
-      TB_UpdateInfoPanel(g_cycle_state,g_runtime_inputs,TB_ComputeNetExposureLots(),TB_ComputeEffectiveLeverage());
+      TB_RefreshUiAndAnalytics();
      }
   }
