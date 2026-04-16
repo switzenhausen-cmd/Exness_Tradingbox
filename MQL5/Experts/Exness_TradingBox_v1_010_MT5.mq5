@@ -60,7 +60,11 @@ void OnTick()
    if(g_cycle_state.is_active && g_cycle_state.be_armed)
      {
       TB_TryComputeBasketReturnPrice(g_cycle_state.basket_be_price);
-      if(g_cycle_state.basket_be_price>0.0 && TB_IsMarketAtBasketReturnPrice(g_cycle_state.basket_be_price))
+      const int be_exit_direction=(net_exposure>0.0 ? 1 : (net_exposure<0.0 ? -1 : 0));
+      if(g_cycle_state.basket_be_price>0.0 &&
+         TB_IsMarketAtBufferedExitPrice(g_cycle_state.basket_be_price,
+                                        g_runtime_inputs.exit_buffer_points,
+                                        be_exit_direction))
         {
          if(TB_CloseEntireCycle("basket_be_return"))
             TB_RebuildFrameAtMarket(g_cycle_state,g_runtime_inputs);
@@ -74,7 +78,10 @@ void OnTick()
         {
          g_cycle_state.trail_armed=true;
          g_cycle_state.cycle_trail_price=next_trail_price;
-         if(TB_IsMarketAtCycleTrailPrice(g_cycle_state.cycle_trail_price,net_exposure))
+         const int trail_exit_direction=(net_exposure>0.0 ? 1 : (net_exposure<0.0 ? -1 : 0));
+         if(TB_IsMarketAtBufferedExitPrice(g_cycle_state.cycle_trail_price,
+                                           g_runtime_inputs.exit_buffer_points,
+                                           trail_exit_direction))
            {
             if(TB_CloseEntireCycle("cycle_trail"))
                TB_RebuildFrameAtMarket(g_cycle_state,g_runtime_inputs);

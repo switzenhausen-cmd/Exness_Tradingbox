@@ -11,4 +11,5 @@ void OnStart()
    inputs.exit_buffer_points=12.0;
    Print(inputs.exit_buffer_points);
    Print(TB_ApplyExitBufferPrice(1.10000,12.0,1));
+   Print(TB_IsMarketAtBufferedExitPrice(1.10000,12.0,1));
   }

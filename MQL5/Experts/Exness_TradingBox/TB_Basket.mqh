@@ -11,6 +11,17 @@ double TB_ApplyExitBufferPrice(const double raw_price,const double buffer_points
    return NormalizeDouble(raw_price,_Digits);
   }
 
+bool TB_IsMarketAtBufferedExitPrice(const double raw_price,const double buffer_points,const int net_direction)
+  {
+   if(raw_price<=0.0 || net_direction==0)
+      return false;
+
+   const double buffered_price=TB_ApplyExitBufferPrice(raw_price,buffer_points,net_direction);
+   if(net_direction>0)
+      return (SymbolInfoDouble(_Symbol,SYMBOL_BID) <= buffered_price);
+   return (SymbolInfoDouble(_Symbol,SYMBOL_ASK) >= buffered_price);
+  }
+
 bool TB_IsBasketManagedPosition(const ulong ticket)
   {
    if(!PositionSelectByTicket(ticket))
@@ -159,11 +170,7 @@ double TB_ComputeBasketReturnPrice()
 bool TB_IsMarketAtBasketReturnPrice(const double return_price)
   {
    const double net_lots=TB_ComputeNetExposureLots();
-   if(net_lots>0.0)
-      return (SymbolInfoDouble(_Symbol,SYMBOL_BID) <= return_price);
-   if(net_lots<0.0)
-      return (SymbolInfoDouble(_Symbol,SYMBOL_ASK) >= return_price);
-   return false;
+   return TB_IsMarketAtBufferedExitPrice(return_price,0.0,(net_lots>0.0 ? 1 : (net_lots<0.0 ? -1 : 0)));
   }
 
 #endif
