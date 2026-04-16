@@ -81,7 +81,15 @@ bool TB_CreateButton(const string name,const string text,const int x,const int y
    ObjectSetInteger(0,name,OBJPROP_FONTSIZE,9);
    ObjectSetString(0,name,OBJPROP_FONT,"Consolas");
    ObjectSetString(0,name,OBJPROP_TEXT,text);
-   return true;
+  return true;
+  }
+
+void TB_SetToggleButtonState(const bool is_running)
+  {
+   const string button_name=TB_UiObjectName("START");
+   if(ObjectFind(0,button_name)<0)
+      return;
+   ObjectSetString(0,button_name,OBJPROP_TEXT,is_running ? "Deactivate EA" : "Start Cycle");
   }
 
 double TB_ParseDoubleInput(const string name,const double fallback)
@@ -142,6 +150,7 @@ bool TB_CreateChartUi()
    ok = ok && TB_CreateLabel(TB_UiObjectName("INFO_SPREAD"),"Spread: 0.00",info_left,TB_UiRowTop(5),TB_UI_PANEL_WIDTH);
    ok = ok && TB_CreateLabel(TB_UiObjectName("INFO_FRAME"),"Frame Height: 0.00",info_left,TB_UiRowTop(6),TB_UI_PANEL_WIDTH);
 
+   TB_SetToggleButtonState(false);
    ChartRedraw(0);
    return ok;
   }

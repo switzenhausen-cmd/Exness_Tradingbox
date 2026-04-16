@@ -1,5 +1,5 @@
 #property strict
-#property version   "1.008"
+#property version   "1.009"
 
 #include <Trade/Trade.mqh>
 #include "Exness_TradingBox/TB_Config.mqh"
@@ -16,6 +16,7 @@ TBRuntimeInputs g_runtime_inputs;
 void TB_RefreshUiAndAnalytics()
   {
    TB_ReadChartInputs(g_runtime_inputs);
+   const bool is_running=(g_cycle_state.is_armed || g_cycle_state.is_active || TB_CountManagedPositions()>0);
    const double net_exposure=TB_ComputeNetExposureLots();
    const double current_leverage=TB_ComputeEffectiveLeverage();
    const double atr_points=TB_ReadAtrPoints(TB_ATR_PERIOD);
@@ -25,6 +26,7 @@ void TB_RefreshUiAndAnalytics()
    const string regime_label=TB_RegimeToString(regime);
    const double vola_index=TB_ComputeVolaIndex(atr_points,g_cycle_state.frame_height_points);
 
+   TB_SetToggleButtonState(is_running);
    TB_UpdateInfoPanel(g_cycle_state,g_runtime_inputs,net_exposure,current_leverage,regime_label,vola_index);
   }
 
@@ -94,7 +96,23 @@ void OnChartEvent(const int id,const long &lparam,const double &dparam,const str
    if(TB_IsStartButtonEvent(id,sparam))
      {
       TB_ReadChartInputs(g_runtime_inputs);
-      TB_RebuildFrameAtMarket(g_cycle_state,g_runtime_inputs);
+      const int managed_positions=TB_CountManagedPositions();
+      const bool is_running=(g_cycle_state.is_armed || g_cycle_state.is_active || managed_positions>0);
+
+      if(is_running)
+        {
+         bool closed_all=true;
+         if(managed_positions>0)
+            closed_all=TB_CloseEntireCycle("manual_deactivate");
+
+         if(closed_all && TB_CountManagedPositions()==0)
+            TB_SetCycleIdle(g_cycle_state);
+        }
+      else
+        {
+         TB_RebuildFrameAtMarket(g_cycle_state,g_runtime_inputs);
+        }
+
       TB_RefreshUiAndAnalytics();
      }
   }

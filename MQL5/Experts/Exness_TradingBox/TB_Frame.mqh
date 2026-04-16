@@ -13,6 +13,13 @@ void TB_DeleteFrameObjects()
    ObjectDelete(0,TB_FrameObjectName("LOWER"));
   }
 
+void TB_SetCycleIdle(TBCycleState &state)
+  {
+   TB_ResetCycleState(state);
+   TB_DeleteFrameObjects();
+   ChartRedraw(0);
+  }
+
 double TB_CurrentMidPrice()
   {
    const double bid=SymbolInfoDouble(_Symbol,SYMBOL_BID);
@@ -62,15 +69,8 @@ void TB_RebuildFrameAtMarket(TBCycleState &state,const TBRuntimeInputs &inputs)
    const double mid=TB_CurrentMidPrice();
    const double half_distance=(frame_height_points * _Point) * 0.5;
 
+   TB_ResetCycleState(state);
    state.is_armed=true;
-   state.is_active=false;
-   state.be_armed=false;
-   state.trail_armed=false;
-   state.leg_count=0;
-   state.last_break_direction=0;
-   state.last_leg_lots=0.0;
-   state.basket_be_price=0.0;
-   state.cycle_trail_price=0.0;
    state.frame_mid_price=mid;
    state.frame_height_points=frame_height_points;
    state.frame_upper_price=NormalizeDouble(mid + half_distance,_Digits);

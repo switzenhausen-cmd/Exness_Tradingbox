@@ -9,8 +9,8 @@
 ## Current EA Build
 
 - EA source: `MQL5/Experts/Exness_TradingBox_v1_001_MT5.mq5`
-- Current `#property version`: `1.008`
-- Current display name: `Exness_TradingBox_v1_008_MT5`
+- Current `#property version`: `1.009`
+- Current display name: `Exness_TradingBox_v1_009_MT5`
 
 ## Deployment Target
 
@@ -41,7 +41,7 @@ Relevant log:
 ## Implemented Features
 
 - Chart UI with:
-  - `Start Cycle`
+  - toggle button: `Start Cycle` / `Deactivate EA`
   - `Base Lot`
   - `PI Multiplier`
   - `Hedge Mult`
@@ -75,6 +75,10 @@ Relevant log:
   - `soft`, `medium`, `hard`
   - basket-level trailing based on net exposure direction
 - Timer-driven UI refresh
+- Manual deactivation:
+  - clicking `Deactivate EA` closes all managed positions
+  - if all closes succeed, the EA clears the frame and stays idle
+  - no automatic frame rebuild happens after manual deactivation
 - PowerShell deploy script that copies and compiles directly into the MT5 instance
 
 ## Current User-Controlled Parameters
