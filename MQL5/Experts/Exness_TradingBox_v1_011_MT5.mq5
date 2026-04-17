@@ -5,11 +5,11 @@
 #include "Exness_TradingBox/TB_Config.mqh"
 #include "Exness_TradingBox/TB_State.mqh"
 #include "Exness_TradingBox/TB_UI.mqh"
-#include "Exness_TradingBox/TB_Frame.mqh"
-#include "Exness_TradingBox/TB_Trade.mqh"
 #include "Exness_TradingBox/TB_Basket.mqh"
 #include "Exness_TradingBox/TB_Analytics.mqh"
 #include "Exness_TradingBox/TB_Log.mqh"
+#include "Exness_TradingBox/TB_Frame.mqh"
+#include "Exness_TradingBox/TB_Trade.mqh"
 
 TBCycleState   g_cycle_state;
 TBRuntimeInputs g_runtime_inputs;
@@ -67,7 +67,7 @@ void OnTick()
                                         g_runtime_inputs.exit_buffer_points,
                                         be_exit_direction))
         {
-         if(TB_CloseEntireCycle("basket_be_return"))
+         if(TB_CloseEntireCycle(g_cycle_state,g_runtime_inputs,"basket_be_return"))
             TB_RebuildFrameAtMarket(g_cycle_state,g_runtime_inputs);
         }
      }
@@ -84,7 +84,7 @@ void OnTick()
                                            g_runtime_inputs.exit_buffer_points,
                                            trail_exit_direction))
            {
-            if(TB_CloseEntireCycle("cycle_trail"))
+            if(TB_CloseEntireCycle(g_cycle_state,g_runtime_inputs,"cycle_trail"))
                TB_RebuildFrameAtMarket(g_cycle_state,g_runtime_inputs);
            }
         }
@@ -111,7 +111,7 @@ void OnChartEvent(const int id,const long &lparam,const double &dparam,const str
         {
          bool closed_all=true;
          if(managed_positions>0)
-            closed_all=TB_CloseEntireCycle("manual_deactivate");
+            closed_all=TB_CloseEntireCycle(g_cycle_state,g_runtime_inputs,"manual_deactivate");
 
          if(closed_all && TB_CountManagedPositions()==0)
             TB_SetCycleIdle(g_cycle_state);

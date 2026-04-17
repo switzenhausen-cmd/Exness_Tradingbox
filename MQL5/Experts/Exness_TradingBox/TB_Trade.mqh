@@ -56,16 +56,35 @@ double TB_ComputeNextLegLots(const TBCycleState &state,const TBRuntimeInputs &in
    return TB_NormalizeLots(state.last_leg_lots * inputs.hedge_multiplier);
   }
 
-void TB_LogTradeFailure(const string action)
+void TB_LogTradeFailure(const string action,
+                        const string reason,
+                        const int direction,
+                        const double lots,
+                        const TBCycleState &state,
+                        const TBRuntimeInputs &inputs)
   {
+   const uint retcode=g_tb_trade.ResultRetcode();
+   const string retcode_description=g_tb_trade.ResultRetcodeDescription();
    Print(action,
          " failed. retcode=",
-         g_tb_trade.ResultRetcode(),
+         retcode,
          " desc=",
-         g_tb_trade.ResultRetcodeDescription());
+         retcode_description);
+   TB_LogEvent("order_failure",
+               TB_BuildFailureReason(action + "_" + reason,retcode,retcode_description),
+               direction,
+               state.leg_count + 1,
+               lots,
+               state,
+               inputs);
   }
 
-bool TB_OpenTradeByDirection(const int direction,const double lots,const string comment)
+bool TB_OpenTradeByDirection(const int direction,
+                             const double lots,
+                             const string comment,
+                             const string reason,
+                             const TBCycleState &state,
+                             const TBRuntimeInputs &inputs)
   {
    TB_ConfigureTradeContext();
 
@@ -73,33 +92,34 @@ bool TB_OpenTradeByDirection(const int direction,const double lots,const string 
      {
       if(g_tb_trade.Buy(lots,_Symbol,0.0,0.0,0.0,comment))
          return true;
-      TB_LogTradeFailure("Buy");
+      TB_LogTradeFailure("Buy",reason,direction,lots,state,inputs);
       return false;
      }
 
    if(g_tb_trade.Sell(lots,_Symbol,0.0,0.0,0.0,comment))
       return true;
-   TB_LogTradeFailure("Sell");
+   TB_LogTradeFailure("Sell",reason,direction,lots,state,inputs);
    return false;
   }
 
 bool TB_OpenInitialBreakTrade(TBCycleState &state,const int direction,const TBRuntimeInputs &inputs)
   {
    const double lots=TB_ComputeNextLegLots(state,inputs);
-   if(!TB_OpenTradeByDirection(direction,lots,"TB initial break"))
+   if(!TB_OpenTradeByDirection(direction,lots,"TB initial break","breakout",state,inputs))
       return false;
 
    state.is_active=true;
    state.last_break_direction=direction;
    state.leg_count=1;
    state.last_leg_lots=lots;
+   TB_LogEvent("entry_initial","breakout",direction,state.leg_count,lots,state,inputs);
    return true;
   }
 
 bool TB_OpenHedgeLeg(TBCycleState &state,const int direction,const TBRuntimeInputs &inputs)
   {
    const double lots=TB_ComputeNextLegLots(state,inputs);
-   if(!TB_OpenTradeByDirection(direction,lots,"TB hedge leg"))
+   if(!TB_OpenTradeByDirection(direction,lots,"TB hedge leg","breakout",state,inputs))
       return false;
 
    state.is_active=true;
@@ -108,13 +128,18 @@ bool TB_OpenHedgeLeg(TBCycleState &state,const int direction,const TBRuntimeInpu
    state.last_leg_lots=lots;
    state.be_armed=false;
    state.trail_armed=false;
+   TB_LogEvent("entry_hedge","breakout",direction,state.leg_count,lots,state,inputs);
    return true;
   }
 
-bool TB_CloseEntireCycle(const string reason)
+bool TB_CloseEntireCycle(const TBCycleState &state,const TBRuntimeInputs &inputs,const string reason)
   {
    bool all_closed=true;
    TB_ConfigureTradeContext();
+   const int managed_positions_before=TB_CountManagedPositions();
+   if(managed_positions_before>0)
+      TB_LogEvent("cycle_close_attempt",reason,0,state.leg_count,0.0,state,inputs);
+
    for(int index=PositionsTotal()-1; index>=0; --index)
      {
       const ulong ticket=PositionGetTicket(index);
@@ -122,14 +147,29 @@ bool TB_CloseEntireCycle(const string reason)
          continue;
       if(!TB_IsManagedPosition(ticket))
          continue;
+      const ENUM_POSITION_TYPE position_type=(ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
+      const int direction=(position_type==POSITION_TYPE_BUY ? 1 : -1);
+      const double lots=PositionGetDouble(POSITION_VOLUME);
       if(!g_tb_trade.PositionClose(ticket))
         {
+         const uint retcode=g_tb_trade.ResultRetcode();
+         const string retcode_description=g_tb_trade.ResultRetcodeDescription();
          Print("Close cycle failed for ",ticket," reason=",reason,
-               " retcode=",g_tb_trade.ResultRetcode(),
+               " retcode=",retcode,
                " desc=",g_tb_trade.ResultRetcodeDescription());
+         TB_LogEvent("close_failure",
+                     TB_BuildFailureReason(reason,retcode,retcode_description),
+                     direction,
+                     state.leg_count,
+                     lots,
+                     state,
+                     inputs);
          all_closed=false;
         }
      }
+
+   if(all_closed && managed_positions_before>0 && TB_CountManagedPositions()==0)
+      TB_LogEvent("cycle_close_success",reason,0,state.leg_count,0.0,state,inputs);
    return all_closed;
   }
 

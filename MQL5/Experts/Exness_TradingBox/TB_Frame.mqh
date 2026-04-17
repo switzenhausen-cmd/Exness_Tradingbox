@@ -70,6 +70,7 @@ void TB_RebuildFrameAtMarket(TBCycleState &state,const TBRuntimeInputs &inputs)
    const double half_distance=(frame_height_points * _Point) * 0.5;
 
    TB_ResetCycleState(state);
+   state.cycle_id=TB_NextCycleId();
    state.is_armed=true;
    state.frame_mid_price=mid;
    state.frame_height_points=frame_height_points;
@@ -77,6 +78,7 @@ void TB_RebuildFrameAtMarket(TBCycleState &state,const TBRuntimeInputs &inputs)
    state.frame_lower_price=NormalizeDouble(mid - half_distance,_Digits);
 
    TB_DrawFrameObjects(state);
+   TB_LogEvent("cycle_start","frame_rebuild",0,0,0.0,state,inputs);
   }
 
 int TB_DetectBreakoutDirection(const TBCycleState &state,const double bid,const double ask)
