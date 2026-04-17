@@ -8,16 +8,16 @@
 
 ## Current EA Build
 
-- EA source: `MQL5/Experts/Exness_TradingBox_v1_011_MT5.mq5`
-- Current `#property version`: `1.011`
-- Current display name: `Exness_TradingBox_v1_011_MT5`
+- EA source: `MQL5/Experts/Exness_TradingBox_v1_012_MT5.mq5`
+- Current `#property version`: `1.012`
+- Current display name: `Exness_TradingBox_v1_012_MT5`
 
 ## Deployment Target
 
 - MT5 Experts path: `C:\Users\switz\AppData\Local\Temp\MT5_BT_Portable_Inst3\MQL5\Experts`
 - Deployed files:
-  - `Exness_TradingBox_v1_011_MT5.mq5`
-  - `Exness_TradingBox_v1_011_MT5.ex5`
+  - `Exness_TradingBox_v1_012_MT5.mq5`
+  - `Exness_TradingBox_v1_012_MT5.ex5`
   - include folder `Exness_TradingBox\`
 
 ## Verified Status
@@ -96,12 +96,19 @@ Relevant log:
 ## Current User-Controlled Parameters
 
 - `Base Lot`
+- default: `1.00`
 - `PI Multiplier`
+- default: `2.00`
 - `Hedge Mult`
+- default: `3.00`
 - `BE Currency`
+- default: `10.00`
 - `ATR Mult`
+- default: `0.10`
 - `Trail Mode`
+- default: `hard`
 - `Exit Buffer Pts`
+- default: `10.0`
 
 ## Known Gaps / Follow-Up Items
 

@@ -131,19 +131,19 @@ bool TB_CreateChartUi()
    ok = ok && TB_CreateButton(TB_UiObjectName("START"),"Start Cycle",base_left,TB_UiRowTop(0),TB_UI_LABEL_WIDTH + TB_UI_INPUT_WIDTH + 8);
 
    ok = ok && TB_CreateLabel(TB_UiObjectName("LBL_LOT"),"Base Lot",label_left,TB_UiRowTop(1),TB_UI_LABEL_WIDTH);
-   ok = ok && TB_CreateEdit(TB_UiObjectName("INP_LOT"),"0.10",input_left,TB_UiRowTop(1));
+   ok = ok && TB_CreateEdit(TB_UiObjectName("INP_LOT"),"1.00",input_left,TB_UiRowTop(1));
    ok = ok && TB_CreateLabel(TB_UiObjectName("LBL_PI"),"PI Multiplier",label_left,TB_UiRowTop(2),TB_UI_LABEL_WIDTH);
    ok = ok && TB_CreateEdit(TB_UiObjectName("INP_PI"),"2.00",input_left,TB_UiRowTop(2));
    ok = ok && TB_CreateLabel(TB_UiObjectName("LBL_HEDGE"),"Hedge Mult",label_left,TB_UiRowTop(3),TB_UI_LABEL_WIDTH);
-   ok = ok && TB_CreateEdit(TB_UiObjectName("INP_HEDGE"),"2.00",input_left,TB_UiRowTop(3));
+   ok = ok && TB_CreateEdit(TB_UiObjectName("INP_HEDGE"),"3.00",input_left,TB_UiRowTop(3));
    ok = ok && TB_CreateLabel(TB_UiObjectName("LBL_BE"),"BE Currency",label_left,TB_UiRowTop(4),TB_UI_LABEL_WIDTH);
    ok = ok && TB_CreateEdit(TB_UiObjectName("INP_BE"),"10.00",input_left,TB_UiRowTop(4));
    ok = ok && TB_CreateLabel(TB_UiObjectName("LBL_ATR"),"ATR Mult",label_left,TB_UiRowTop(5),TB_UI_LABEL_WIDTH);
-   ok = ok && TB_CreateEdit(TB_UiObjectName("INP_ATR"),"1.00",input_left,TB_UiRowTop(5));
+   ok = ok && TB_CreateEdit(TB_UiObjectName("INP_ATR"),"0.10",input_left,TB_UiRowTop(5));
    ok = ok && TB_CreateLabel(TB_UiObjectName("LBL_EXIT_BUFFER"),"Exit Buffer Pts",label_left,TB_UiRowTop(6),TB_UI_LABEL_WIDTH);
-   ok = ok && TB_CreateEdit(TB_UiObjectName("INP_EXIT_BUFFER"),"5.0",input_left,TB_UiRowTop(6));
+   ok = ok && TB_CreateEdit(TB_UiObjectName("INP_EXIT_BUFFER"),"10.0",input_left,TB_UiRowTop(6));
    ok = ok && TB_CreateLabel(TB_UiObjectName("LBL_MODE"),"Trail Mode",label_left,TB_UiRowTop(7),TB_UI_LABEL_WIDTH);
-   ok = ok && TB_CreateEdit(TB_UiObjectName("INP_MODE"),"medium",input_left,TB_UiRowTop(7));
+   ok = ok && TB_CreateEdit(TB_UiObjectName("INP_MODE"),"hard",input_left,TB_UiRowTop(7));
 
    ok = ok && TB_CreateLabel(TB_UiObjectName("INFO_NAME"),"EA: " + TB_BuildEaDisplayName(),info_left,TB_UiRowTop(0),TB_UI_PANEL_WIDTH);
    ok = ok && TB_CreateLabel(TB_UiObjectName("INFO_NET"),"Net Exposure: 0.00",info_left,TB_UiRowTop(1),TB_UI_PANEL_WIDTH);
@@ -167,13 +167,13 @@ void TB_DestroyChartUi()
 
 bool TB_ReadChartInputs(TBRuntimeInputs &inputs)
   {
-   inputs.base_lot=TB_ParseDoubleInput(TB_UiObjectName("INP_LOT"),0.10);
+   inputs.base_lot=TB_ParseDoubleInput(TB_UiObjectName("INP_LOT"),1.00);
    inputs.pi_multiplier=TB_ParseDoubleInput(TB_UiObjectName("INP_PI"),2.00);
-   inputs.hedge_multiplier=TB_ParseDoubleInput(TB_UiObjectName("INP_HEDGE"),2.00);
+   inputs.hedge_multiplier=TB_ParseDoubleInput(TB_UiObjectName("INP_HEDGE"),3.00);
    inputs.be_activation_currency=TB_ParseDoubleInput(TB_UiObjectName("INP_BE"),10.00);
-   inputs.atr_multiplier=TB_ParseDoubleInput(TB_UiObjectName("INP_ATR"),1.00);
-   inputs.exit_buffer_points=TB_ParseDoubleInput(TB_UiObjectName("INP_EXIT_BUFFER"),5.0);
-   inputs.trail_mode=TB_ParseTrailModeInput(TB_UiObjectName("INP_MODE"),1);
+   inputs.atr_multiplier=TB_ParseDoubleInput(TB_UiObjectName("INP_ATR"),0.10);
+   inputs.exit_buffer_points=TB_ParseDoubleInput(TB_UiObjectName("INP_EXIT_BUFFER"),10.0);
+   inputs.trail_mode=TB_ParseTrailModeInput(TB_UiObjectName("INP_MODE"),2);
    return true;
   }
 

@@ -1,5 +1,5 @@
 #property strict
-#property version   "1.011"
+#property version   "1.012"
 
 #include <Trade/Trade.mqh>
 #include "Exness_TradingBox/TB_Config.mqh"

@@ -4,7 +4,7 @@
 // Core EA metadata. The visible version is incremented as implementation evolves.
 #define TB_EA_NAME_BASE      "Exness_TradingBox"
 #define TB_EA_VERSION_MAJOR  1
-#define TB_EA_VERSION_MINOR  11
+#define TB_EA_VERSION_MINOR  12
 #define TB_MAGIC_DEFAULT     2026041601
 #define TB_OBJ_PREFIX        "TBX_"
 #define TB_PI_VALUE          3.14159265358979323846
