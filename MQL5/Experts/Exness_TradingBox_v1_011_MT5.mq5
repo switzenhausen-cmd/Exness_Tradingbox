@@ -1,5 +1,5 @@
 #property strict
-#property version   "1.010"
+#property version   "1.011"
 
 #include <Trade/Trade.mqh>
 #include "Exness_TradingBox/TB_Config.mqh"
@@ -9,6 +9,7 @@
 #include "Exness_TradingBox/TB_Trade.mqh"
 #include "Exness_TradingBox/TB_Basket.mqh"
 #include "Exness_TradingBox/TB_Analytics.mqh"
+#include "Exness_TradingBox/TB_Log.mqh"
 
 TBCycleState   g_cycle_state;
 TBRuntimeInputs g_runtime_inputs;

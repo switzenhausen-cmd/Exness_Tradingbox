@@ -14,6 +14,7 @@ struct TBCycleState
    bool     is_active;
    bool     be_armed;
    bool     trail_armed;
+   long     cycle_id;
    int      leg_count;
    int      last_break_direction;
    double   frame_mid_price;
